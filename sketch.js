@@ -2,6 +2,10 @@ var canvasWidth = 600;
 var canvasHeight = 600;
 
 var initialPattern = generatePattern();
+let newPattern = rotatePattern(initialPattern, 90);
+
+console.log(initialPattern);
+console.log(newPattern);
 
 function setup() {
     var canvas = createCanvas(canvasWidth, canvasHeight);
@@ -14,18 +18,58 @@ function draw() {
     background(255, 204, 100);
     
 
-    drawPattern();
+    drawPattern(initialPattern);
+
+    let newPattern = rotatePattern(initialPattern);
+    drawPattern(newPattern);
+
 }
 
-function drawPattern() {
-    for(let i = 0; i < initialPattern.length; i++) {
-        rect(initialPattern[i].x, initialPattern[i].y, 1, 1);
+function drawPattern(pattern) {
+    for(let i = 0; i < pattern.length; i++) {
+        rect(300 + pattern[i].x, 300 + pattern[i].y, 1, 1);
     }
 }
 
+function rotatePattern(pattern) {
+    
+    let newPattern = clonePattern(pattern);
+
+    // rotating
+    for(let i = 0; i < newPattern.length; i++) {
+        newPattern[i].x = newPattern[i].y * -1;
+        newPattern[i].y = newPattern[i].x;
+    }
+
+    // translating
+
+    let offsetX = Math.abs(pattern[pattern.length-1].x) - Math.abs(newPattern[0].x);
+    let offsetY = Math.abs(pattern[pattern.length-1].y) - Math.abs(newPattern[0].y);
+
+    for(let i = 0; i < newPattern.length; i++) {
+        /* newPattern[i].x = newPattern[i].x + Math.abs(offsetX);
+        newPattern[i].y = newPattern[i].y + Math.abs(offsetY); */
+        newPattern[i].x += 50;
+    }
+
+    return newPattern;
+}
+
+function clonePattern(pattern) {
+
+    let newPattern = [];
+
+    for(let i = 0; i < pattern.length; i++) {
+        let newCoord = Object.assign({}, pattern[i]);
+        newPattern.push(newCoord);
+    }
+
+    return newPattern;
+}
+
 function generatePattern() {
-    let x = canvasWidth / 2;
-    let y = canvasHeight / 2;
+    let x = 0;
+    let y = 0;
     let pattern = [];
 
     pattern.push({x, y});
@@ -39,7 +83,6 @@ function generatePattern() {
 
     return pattern;
 }
-
 
 function rng() {
     return Math.round(Math.random() * 2) -1;
